@@ -39,8 +39,3 @@ ESP32 UWB configured as a MQTT Tag:
     ```Python
     if new_measurements.timestamp - last_measurements[i].timestamp > expiring_time:
       discard last_measurement[i]
-<<<<<<< HEAD
-    ```
-=======
-    ```
->>>>>>> 0b1beb08d1540e49f2c9b5f1339db42355912f69
