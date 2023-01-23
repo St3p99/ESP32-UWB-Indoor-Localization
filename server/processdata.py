@@ -10,14 +10,10 @@ class ProcessData(Thread):
         self.server = server
 
     def run(self):
-        while (True):
-            bytesAddressPair = self.server.sock.recvfrom(100)
-            msg = bytesAddressPair[0].decode("utf-8")
-            # address = bytesAddressPair[1]
-            self.read_data(msg)
+        self.server.client.loop_forever()
 
-
-    def read_data(self, line):
+    def on_message(self, client, userdata, message):
+        line = message.payload.decode("utf-8")
         try:
             uwb_data = json.loads(line)
             if uwb_data["T"] not in self.server.tags:
@@ -31,8 +27,8 @@ class ProcessData(Thread):
                 position_changed = tag.add_measurement(self.server.anchors[uwb_data["A"]], float(uwb_data["R"]))
                 if position_changed and self.server.visualizer is not None:
                     self.server.visualizer.update_tag(tag)
-                elif position_changed: print(tag.get_last_position())
+                elif position_changed:
+                    print(tag.get_last_position())
         except JSONDecodeError as e:
             print(e)
             print("exception:" + line)
-

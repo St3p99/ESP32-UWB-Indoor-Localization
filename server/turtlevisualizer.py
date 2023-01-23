@@ -7,7 +7,8 @@ from visualizer import Visualizer
 
 
 class TurtleVisualizer(Visualizer):
-    TAG_LIFETIME = 10 # sec
+    TAG_LIFETIME = 10  # sec
+
     def __init__(self, anchors):
         self.turtle_screen = turtle.Screen()
         self.screen_init(self.turtle_screen)
@@ -23,7 +24,7 @@ class TurtleVisualizer(Visualizer):
 
     def set_anchors(self, anchors):
         self.anchors = anchors
-        if( self.showing ):
+        if (self.showing):
             for t_a in self.turtle_anchors:
                 t_a.clear()
             self.turtle_anchors = []
@@ -60,15 +61,15 @@ class TurtleVisualizer(Visualizer):
             self.turtle_tags.pop(tag.get_addr())
 
     def remove_inactive_tags(self):
-        while(True):
+        while (True):
             time.sleep(TurtleVisualizer.TAG_LIFETIME)
             tags_addr = list(self.turtle_tags.keys())
             for tag_addr in tags_addr:
-               t, timestamp = self.turtle_tags[tag_addr]
-               if timestamp + timedelta(seconds=TurtleVisualizer.TAG_LIFETIME) < datetime.now():
-                   # print("Inactive Tag "+ tag_addr)
-                   t.clear()
-                   self.turtle_tags.pop(tag_addr)
+                t, timestamp = self.turtle_tags[tag_addr]
+                if timestamp + timedelta(seconds=TurtleVisualizer.TAG_LIFETIME) < datetime.now():
+                    # print("Inactive Tag "+ tag_addr)
+                    t.clear()
+                    self.turtle_tags.pop(tag_addr)
 
     def draw_anchors(self):
         for a in self.anchors:
@@ -76,7 +77,7 @@ class TurtleVisualizer(Visualizer):
             self.turtle_init(t)
             pos = "({x}, {y})"
             self.draw_uwb_anchor(a.get_x(), a.get_y(),
-                                 a.get_addr()+pos.format(x=a.get_x(), y=a.get_y()),
+                                 a.get_addr() + pos.format(x=a.get_x(), y=a.get_y()),
                                  t)
             self.turtle_anchors.append(t)
 
@@ -155,14 +156,13 @@ class TurtleVisualizer(Visualizer):
         self.fill_rect(-400, 200, 800, 40, "black", t)
         self.write_txt(-50, 205, "WALL", "yellow", t, f=('Arial', 24, 'normal'))
 
-
     def draw_uwb_anchor(self, x, y, txt, t):
         x = -250 + x * self.meter2pixel
-        y =  150 +  y * self.meter2pixel
+        y = 150 - y * self.meter2pixel
         r = 20
         self.fill_cycle(x, y, r, "green", t)
         self.write_txt(x + r, y, txt,
-                  "black", t, f=('Arial', 16, 'normal'))
+                       "black", t, f=('Arial', 16, 'normal'))
 
     def draw_uwb_tag(self, x, y, txt, t):
         pos_x = -250 + int(x * self.meter2pixel)
@@ -170,4 +170,4 @@ class TurtleVisualizer(Visualizer):
         r = 20
         self.fill_cycle(pos_x, pos_y, r, "blue", t)
         self.write_txt(pos_x, pos_y, txt + ": (" + str(x) + "," + str(y) + ")",
-                  "black", t, f=('Arial', 16, 'normal'))
+                       "black", t, f=('Arial', 16, 'normal'))
