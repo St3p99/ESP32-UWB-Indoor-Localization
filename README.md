@@ -8,7 +8,7 @@ Other useful libraries:
  - Adafruit_SSD1306 (to use the ESP32 board display)
  - PubSubClient (to establish MQTT connections)
  
- You can find all the libraries in Arduino/libraries
+You can find all the libraries in Arduino/libraries
  
  # Mosquitto Broker
  1. Download Eclipse Mosquitto Broker 
@@ -39,4 +39,8 @@ ESP32 UWB configured as a MQTT Tag:
     ```Python
     if new_measurements.timestamp - last_measurements[i].timestamp > expiring_time:
       discard last_measurement[i]
+<<<<<<< HEAD
     ```
+=======
+    ```
+>>>>>>> 0b1beb08d1540e49f2c9b5f1339db42355912f69
