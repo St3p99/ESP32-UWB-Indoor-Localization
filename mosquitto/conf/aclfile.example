@@ -1,0 +1,2 @@
+# This affects access control for clients with no username.
+topic readwrite UWB_TAG
