@@ -22,13 +22,13 @@ You can find all the libraries in Arduino/libraries
 # MQTT Tag
 ESP32 UWB configured as a MQTT Tag:
    - connects to WiFI, 
-   - establish a connection with MQTT Broker
-   - loop publishing last measurement to the broker on the 'UWB_TAG' topic.
+   - establishes a connection with MQTT Broker
+   - loops publishing last measurement to the broker on the 'UWB_TAG' topic.
 
 # Python Server
-   - it connects to MQTT Broker
+   - connects to MQTT Broker
    - it subscribe to UWB_TAG tag and wait for the data
-   - runs 3 threads, the main one run the Visualizer (Turtle 2D Tags and Anchors Visualizer), ProcessData to handle and process incoming data, StoreData to store every X mn tag positions on a CSV file. 
+   - runs 3 threads: the main one run the Visualizer (Turtle 2D Tags and Anchors Visualizer), ProcessData to handle and process incoming data, StoreData to store every X mn tag positions on a CSV file. 
 
 # TODO
 1. Calculate tags positions using multiple anchors
