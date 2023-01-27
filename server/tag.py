@@ -40,6 +40,7 @@ class Tag:
         self.measurements = measurements
 
     def add_measurement(self, a: Anchor, range: float):
+
         if self.measurements.get(a.get_addr()) is not None:
             self.measurements[a.get_addr()].append(range)
         else:

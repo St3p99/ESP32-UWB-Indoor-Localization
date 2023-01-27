@@ -42,9 +42,12 @@ class TurtleVisualizer(Visualizer):
 
     def update_tag(self, tag):
         if self.turtle_tags.get(tag.get_addr()) is not None:
-            t = self.turtle_tags[tag.get_addr()][0]
-            t.clear()
-            self.draw_uwb_tag(tag.get_last_position()[0], tag.get_last_position()[1], tag.get_name(), t)
+            turtle_tag, last_update = self.turtle_tags[tag.get_addr()]
+            if datetime.now() - last_update < timedelta(seconds=2):
+                return
+            turtle_tag.clear()
+            self.turtle_tags[tag.get_addr()] = turtle_tag, datetime.now()
+            self.draw_uwb_tag(tag.get_last_position()[0], tag.get_last_position()[1], tag.get_name(), turtle_tag)
         else:
             self.add_tag(tag)
 
