@@ -42,7 +42,7 @@ long token_period = 1*1000;
 bool have_token = false;
 
 long last_hello = 0;
-long hello_period = 30*1000;  // 30mn
+long hello_period = 30*1000;  // 30sc
 
 String json = "";
 String old_json = "";
