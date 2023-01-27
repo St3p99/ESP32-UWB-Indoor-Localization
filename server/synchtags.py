@@ -60,7 +60,7 @@ class SynchTags(Thread):
                 self.active_tags.pop(i-n_removed)  # remove inactive tag
                 n_removed += 1
             elif i > 0 and tag_addr == new_tag_addr:
-                                self.active_tags[i-n_removed] = (tag_addr, new_time)
+                self.active_tags[i-n_removed] = (tag_addr, new_time)
                 found = True
 
         if not found:
