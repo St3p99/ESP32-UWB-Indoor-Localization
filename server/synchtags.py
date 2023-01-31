@@ -1,23 +1,23 @@
+import threading
 import time
 from datetime import datetime, timedelta
-import threading
 from threading import Thread
-import paho.mqtt.client as mqttClient
 
+import paho.mqtt.client as mqttClient
 
 
 class SynchTags(Thread):
     TOPIC_TAG_DISCOVERY = "TAG_DISCOVERY"
     TOPIC_START_RANGING = "START_RANGING"
     TOPIC_RANGING_TERMINATED = "RANGING_TERMINATED"
-    DEBUG = False
+    DEBUG = True
+
     def __init__(self, server):
         threading.Thread.__init__(self, daemon=True)
         self.server = server
         self.client = mqttClient.Client("PythonServer-SynchTags", protocol=mqttClient.MQTTv31)
         self.active_tags = []
         self.lock = threading.Lock()
-
 
     def run(self):
         self.client.connect(self.server.broker_host, self.server.port)  # connect to broker
@@ -34,9 +34,10 @@ class SynchTags(Thread):
                 head_removed = False
                 if SynchTags.DEBUG: print(str(self.active_tags))
                 i = 0
-                while len(self.active_tags) > i - n_removed:
+                n = len(self.active_tags)
+                while i < n:
                     tag_addr, timestamp = self.active_tags[i - n_removed]
-                    if i == 0 and timestamp + timedelta(seconds=2) < datetime.now():
+                    if i == 0 and timestamp + timedelta(seconds=3) < datetime.now():
                         if SynchTags.DEBUG: print("TIME EXPIRED for " + str(tag_addr))
                         self.active_tags.pop(0)  # remove tag died with token
                         self.active_tags.append((tag_addr, timestamp))
@@ -60,10 +61,6 @@ class SynchTags(Thread):
         self.client.subscribe(SynchTags.TOPIC_TAG_DISCOVERY, 0)
         self.client.subscribe(SynchTags.TOPIC_RANGING_TERMINATED, 0)
 
-    def on_subscribe(self, client, userdata, mid, granted_qos):
-        if SynchTags.DEBUG: print("Successfully subscribed to '{topics}' topics".format(
-            topics=SynchTags.TOPIC_TAG_DISCOVERY+", "+SynchTags.TOPIC_RANGING_TERMINATED))
-
     def on_tag_discovery(self, client, userdata, message):
         new_tag_addr = message.payload.decode("utf-8")
         new_time = datetime.now()
@@ -73,15 +70,15 @@ class SynchTags(Thread):
             if len(self.active_tags) == 0:
                 if SynchTags.DEBUG: print("SEND TOKEN TO: {tagaddr}".format(tagaddr=new_tag_addr))
                 client.publish(SynchTags.TOPIC_START_RANGING, new_tag_addr)  # SEND TOKEN
-                self.active_tags.append( (new_tag_addr, new_time) )
+                self.active_tags.append((new_tag_addr, new_time))
                 return
 
-            elif len(self.active_tags) > 1:
+            elif len(self.active_tags) > 0:
                 found = False
                 for i in range(0, len(self.active_tags)):
-                    tag_addr, time = self.active_tags[i]
-                    if i > 0 and tag_addr == new_tag_addr:
-                        self.active_tags[i] = (tag_addr, new_time)
+                    tag_addr, timestamp = self.active_tags[i]
+                    if tag_addr == new_tag_addr:
+                        if i > 0: self.active_tags[i] = (tag_addr, new_time)
                         found = True
                 if not found:
                     # append new tag
@@ -100,5 +97,3 @@ class SynchTags(Thread):
                 next_tag_addr = self.active_tags[0][0]
                 if SynchTags.DEBUG: print("SEND TOKEN TO THE NEXT: {tagaddr}".format(tagaddr=next_tag_addr))
                 client.publish(SynchTags.TOPIC_START_RANGING, next_tag_addr)  # SEND TOKEN TO self.active_tags[0]
-            else:
-                self.active_tags.append((ta, datetime.now()))

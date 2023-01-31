@@ -43,8 +43,8 @@ class TurtleVisualizer(Visualizer):
     def update_tag(self, tag):
         if self.turtle_tags.get(tag.get_addr()) is not None:
             turtle_tag, last_update = self.turtle_tags[tag.get_addr()]
-            if datetime.now() - last_update < timedelta(seconds=2):
-                return
+            # if datetime.now() - last_update < timedelta(seconds=1):
+            #     return
             turtle_tag.clear()
             self.turtle_tags[tag.get_addr()] = turtle_tag, datetime.now()
             self.draw_uwb_tag(tag.get_last_position()[0], tag.get_last_position()[1], tag.get_name(), turtle_tag)
@@ -160,7 +160,7 @@ class TurtleVisualizer(Visualizer):
         self.write_txt(-50, 205, "WALL", "yellow", t, f=('Arial', 24, 'normal'))
 
     def draw_uwb_anchor(self, x, y, txt, t):
-        x = -250 + x * self.meter2pixel
+        x = -350 + x * self.meter2pixel
         y = 150 - y * self.meter2pixel
         r = 20
         self.fill_cycle(x, y, r, "green", t)
@@ -168,7 +168,7 @@ class TurtleVisualizer(Visualizer):
                        "black", t, f=('Arial', 16, 'normal'))
 
     def draw_uwb_tag(self, x, y, txt, t):
-        pos_x = -250 + int(x * self.meter2pixel)
+        pos_x = -350 + int(x * self.meter2pixel)
         pos_y = 150 - int(y * self.meter2pixel)
         r = 20
         self.fill_cycle(pos_x, pos_y, r, "blue", t)

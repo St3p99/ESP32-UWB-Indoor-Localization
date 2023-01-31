@@ -1,2 +1,16 @@
 # This affects access control for clients with no username.
 topic readwrite UWB_TAG
+topic readwrite TAG_DISCOVERY
+topic readwrite START_RANGING
+topic readwrite RANGING_TERMINATED
+topic readwrite IMU_DATA
+
+# This only affects clients with username "streamsheets".
+user streamsheets
+topic read UWB_TAG
+topic read TAG_DISCOVERY
+topic read START_RANGING
+topic read RANGING_TERMINATED
+topic read IMU_DATA
+
+

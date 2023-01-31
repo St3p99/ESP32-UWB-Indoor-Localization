@@ -1,15 +1,13 @@
-import json
 from enum import Enum
-from json import JSONDecodeError
 
 from anchor import Anchor
-from processuwbdata import ProcessUWBData
+from processdata import ProcessData
 from storedata import StoreData
 from synchtags import SynchTags
 from tag import Tag
 from turtlevisualizer import TurtleVisualizer
 
-# DEBUG = False
+
 class VisualizerType(Enum):
     TURTLE = 1
 
@@ -41,7 +39,7 @@ class Server:
             self.visualizer = TurtleVisualizer(self.anchors.values())
 
     def start(self):
-        t1 = ProcessUWBData(self)
+        t1 = ProcessData(self)
         t1.start()
 
         t2 = SynchTags(self)
@@ -59,7 +57,7 @@ class Server:
 
 def main():
     # configure network
-    HOST = "192.168.1.53"
+    HOST = "192.168.172.90"
     PORT = 1883
 
     # set anchors
@@ -73,10 +71,10 @@ def main():
     """
 
     A1 = Anchor(A1_ADDR, 0, 0)
-    A2 = Anchor(A2_ADDR, 3, 0)
+    A2 = Anchor(A2_ADDR, 6, 0)
 
-    TAG1_ADDR = "7D:00:22:EA:82:60:3B:9B"
-    TAG2_ADDR = "8D:00:22:EA:82:60:3B:9B"
+    TAG1_ADDR = "1D:00:22:EA:82:60:3B:9B"
+    TAG2_ADDR = "2D:00:22:EA:82:60:3B:9B"
     T1 = Tag("T1", TAG1_ADDR)
     T2 = Tag("T2", TAG2_ADDR)
 

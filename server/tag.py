@@ -1,4 +1,4 @@
-import cmath
+import json
 import multiprocessing as mp
 from datetime import datetime
 
@@ -15,7 +15,8 @@ class Tag:
         self.name = name
         self.addr = addr
         self.measurements = {}
-        self.queue = mp.Queue()
+        self.uwb_queue = mp.Queue()
+        self.imu_queue = mp.Queue()
         self.last_measurements = [None] * 2
         self.x = 0
         self.y = 0
@@ -39,8 +40,12 @@ class Tag:
     def set_measurements(self, measurements: dict):
         self.measurements = measurements
 
-    def add_measurement(self, a: Anchor, range: float):
+    def add_imu_measurement(self, measurement: json):  # TYPE Json or json
+        q = [measurement["T"], measurement["accelerometer"], measurement["gyroscope"], measurement["magnetometer"],
+             str(datetime.now().strftime("%d-%m-%Y %H:%M:%S"))]
+        self.imu_queue.put(q)
 
+    def add_measurement(self, a: Anchor, range: float):
         if self.measurements.get(a.get_addr()) is not None:
             self.measurements[a.get_addr()].append(range)
         else:
@@ -51,6 +56,11 @@ class Tag:
         #    if new_measurements.timestamp - last_measurements[i].timestamp > expiring_time:
         #       discard last_measurement[i]
 
+        # TODO: use 3 anchors to calculate tag positions
+        #   needs 3 'last_measurements' from different anchors
+        #   and trilateration.least_squares_trilateration_2D function to calculate tag position
+
+        # Now, 2 anchors are used
         # last_measurements[0] is the latest measurement
         # last_measurements[1] is the second last measurement...
         # last_measurements refers to different anchors
@@ -72,9 +82,15 @@ class Tag:
         return False
 
     def update_pos(self):
-        # TODO : Calculate position using multiple anchors
+        # TODO: use 3 anchors to calculate tag positions
+        #   needs 3 'last_measurements' from different anchors
+        #   and trilateration.least_squares_trilateration_2D function to calculate tag position
+
         a1 = self.last_measurements[0][0]
         a2 = self.last_measurements[1][0]
+
+        # NOTE: trilateration_2D_2A_origin function assume that the first anchor is fixed in the axis origin
+        # and second one is on the x-axis
 
         if a1.x == 0.0 and a1.y == 0.0:
             self.x, self.y = trilateration.trilateration_2D_2A_origin(
@@ -86,7 +102,7 @@ class Tag:
                 a1, self.last_measurements[0][1])
 
         q = [self.name, self.x, self.y, str(datetime.now().strftime("%d-%m-%Y %H:%M:%S"))]
-        self.queue.put(q)
+        self.uwb_queue.put(q)
 
     def get_last_position(self):
         return self.x, self.y, self.z
